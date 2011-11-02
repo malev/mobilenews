@@ -3,3 +3,15 @@ db/*.sqlite3
 log/*.log
 tmp/
 .sass-cache/
+log/
+.idea/
+vendor/ruby/
+.bundle
+*.tmproj
+public/stylesheets/compiled
+.sass-cache/
+coverage/
+*.DS_Store
+.rvmrc
+*.swp
+Gemfile.lock
