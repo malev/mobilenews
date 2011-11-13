@@ -62,6 +62,10 @@ class Article
     @url = url
   end
 
+  def link
+    @url
+  end
+
   def process
     @doc = Nokogiri::HTML(open(@url), 'utf-8')
     nota = @doc.css("div.nota").first
