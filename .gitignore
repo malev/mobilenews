@@ -15,3 +15,4 @@ coverage/
 .rvmrc
 *.swp
 Gemfile.lock
+.rvm*
