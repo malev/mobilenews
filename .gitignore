@@ -14,5 +14,5 @@ coverage/
 *.DS_Store
 .rvmrc
 *.swp
-Gemfile.lock
+Gemfile.*
 .rvm*
