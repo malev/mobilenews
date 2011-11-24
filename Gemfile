@@ -24,6 +24,7 @@ group :development, :test do
   gem 'rspec-rails'
   gem 'guard-rspec'
   gem 'guard-rails'
+  gem 'fakeweb'
 end
 
 # Use unicorn as the web server
