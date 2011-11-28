@@ -9,6 +9,7 @@ gem 'simple-rss'
 gem 'rb-inotify'
 gem 'libnotify'
 gem 'nokogiri'
+gem 'haml'
 
 # Gems used only for assets and not required
 # in production environments by default.

@@ -29,4 +29,4 @@ class ReadItLater
 end
 
 read = ReadItLater.new("malev", '', "c66gkx0Zpfu44ad8diT9d77P3fAjlp50")
-
+read.status
