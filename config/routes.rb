@@ -3,6 +3,8 @@ Mobilenews::Application.routes.draw do
 
   root :to => "blog#index"
 
+  resources :posts
+
   # The priority is based upon order of creation:
   # first created -> highest priority.
 

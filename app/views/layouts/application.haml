@@ -1,0 +1,18 @@
+!!!
+%html
+  %head
+    %title
+      Mobilenews
+    = stylesheet_link_tag    "application"
+    = javascript_include_tag "application"
+    = csrf_meta_tags
+  %body
+    - flash.each do |key, value|
+      .flash{:class => key}
+        value
+    .sidebar.two.columns
+      .nav
+        %ul
+          %li
+            = link_to "New post...", new_post_path
+    = yield

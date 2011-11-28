@@ -1,7 +1,7 @@
 # encoding: UTF-8
 
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
-
+=begin
 describe ReadItLater, "The class should talk to the ReadItLater Api" do
   before do
     @url = "https://readitlaterlist.com/v2/"
@@ -15,14 +15,6 @@ describe ReadItLater, "The class should talk to the ReadItLater Api" do
   it "should verify if the credentials are correct"
 
   it "should fail with FASE credentials" do
-    username = "false"
-    password = "incorrect"
-    resp = false
-
-    select_response('auth', resp)
-
-    ReadItLater.auth(username, password).should == false
-  end
 
   it "should authenticate with the correct user/password"
 
@@ -32,3 +24,4 @@ describe ReadItLater, "The class should talk to the ReadItLater Api" do
 
 
 end
+=end

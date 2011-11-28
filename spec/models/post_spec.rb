@@ -19,6 +19,18 @@ describe Post do
     @it.body = "foo"
     @it.body.should eql("foo")
   end
+  
+  it "should support reading and writing a blog reference" do
+    blog = Object.new
+    @it.blog = blog
+    @it.blog.should eql(blog)
+  end
+
+  it "should support setting attributes in the initializer" do
+    it = Post.new(:title => "mytitle", :body => "mybody")
+    it.title.should eql("mytitle")
+    it.body.should eql("mybody")
+  end
 
   describe "#publish" do
     before do
@@ -26,12 +38,12 @@ describe Post do
       @it.expects(:blog).returns(@blog)
     end
 
-    after do
-      @blog.verify
-    end
+    #after do
+      #@blog.verify
+    #end
 
     it "should add the post to the blog" do
-      @blog.expect :add_entry, nil, [@it]
+      @blog.expects(:add_entry).returns([@it])
       @it.publish
     end
   end

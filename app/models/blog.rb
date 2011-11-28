@@ -20,6 +20,17 @@ class Blog
     end
   end
 
+  def add_entry(entry)
+    entries << entry
+  end
+
+  def new_post(*args)
+    post_maker.call(*args).tap do |p|
+      p.blog = self
+    end
+  end
+
+
   private
 
   def post_maker
