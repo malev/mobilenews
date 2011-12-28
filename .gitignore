@@ -16,3 +16,4 @@ coverage/
 *.swp
 Gemfile.*
 .rvm*
+config/initializers/omniauth.rb

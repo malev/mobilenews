@@ -10,6 +10,8 @@ gem 'rb-inotify'
 gem 'libnotify'
 gem 'nokogiri'
 gem 'haml'
+gem 'omniauth'
+gem 'omniauth-twitter'
 
 # Gems used only for assets and not required
 # in production environments by default.

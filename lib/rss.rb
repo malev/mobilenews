@@ -6,6 +6,10 @@ require 'simple-rss'
 require 'nokogiri'
 require 'open-uri'
 
+class Newspaper
+end
+
+
 
 class Pagina12
   attr_reader :resumes, :articles, :header
@@ -33,6 +37,10 @@ class Pagina12
       @articles << Article.new(resume.link)
     end
     @articles
+  end
+
+  def get_links
+    @items.each { |item| puts item.link}
   end
 end
 
@@ -129,3 +137,4 @@ end
 pagina= Pagina12.new("http://www.pagina12.com.ar/diario/rss/principal.xml")
 html = HTMLGenerator.new(pagina)
 
+puts html.to_html
