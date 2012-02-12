@@ -29,3 +29,7 @@ every :Sunday, :at => '5 am' do
   command "rm #{recipe}.mobi"
   command "service lighttpd start"
 end
+
+#every 1.hour do
+#  command "ebook-convert recipes/readitlater.recipe read.mobi --username #{CONFIG['ril_username']} --password #{CONFIG['ril_password']}"
+#end
