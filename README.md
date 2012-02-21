@@ -8,6 +8,7 @@ Use
 Clone it anywhere, create config.yml with the correct information and then run:
 
 > bundle
+
 > whenever --update-crontab
 
 TODO
