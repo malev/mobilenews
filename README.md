@@ -13,7 +13,13 @@ Clone it anywhere, create config.yml with the correct information and then run:
 
 TODO
 ----
-* create a new coolest syntax
+* create a new coolest syntax:
+
+> Newsboy do
+>  deliver "pagina_12_print_ed", :every => 1.day, :at => "4.30 am"
+>  deliver "rebelion", :every => 1.hour
+> end
+
 * Add an option to deliver now everything.
 
 More information
