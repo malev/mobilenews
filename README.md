@@ -5,27 +5,43 @@ Small program that creates cron tasks to deliver the newspaper directly into you
 
 Use
 ---
-Clone it anywhere, create config.yml with the correct information and then run:
 
-> bundle
+* Install [calibre](http://calibre-ebook.com/).
+* Clone it wherever you want.
+* Run bundle
+* Config your config/config.yml and mobilenews files (there is an example below.)
+* Run mobilenews
 
-> whenever --update-crontab
+mobilenews file
+---------------
 
-TODO
-----
-* create a new coolest syntax:
+```ruby  
+#!/usr/bin/env ruby
 
-> Newsboy do
->  deliver "pagina_12_print_ed", :every => 1.day, :at => "4.30 am"
->  deliver "rebelion", :every => 1.hour
-> end
+require_relative "lib/newsboy.rb"
 
-* Add an option to deliver now everything.
+Newsboy.new do
+  deliver "pagina_12_print_ed", :every => "1 day", :at => "4.30 am"
+  deliver "ieco", :every => "sunday", :at => "4.40 am"
+end.work
+```
+
+Options
+-------
+```sh  
+$ ./mobilenews --help
+Usage: Newsboy [options]
+    -i, --update-crontab
+    -w, --write-crontab
+    -c, --clear-crontab
+    -d, --deliver-now
+    -v, --version
+```
 
 More information
 ----------------
-You can find more info about me and my projects on my personal [blog](https://blog.malev.com.ar)
+You can find more info about me and my projects on my personal [blog](https://blog.malev.com.ar).
 
 License
 -------
-mobilenews is Copyright © 2011 malev.com.ar . It is free software, and may be redistributed under the terms specified in the LICENSE file.
+mobilenews is Copyright © 2011 malev.com.ar . It is free software, and may be redistributed under the terms specified in the COPYING file.
