@@ -43,9 +43,7 @@ class Newsboy
 
   def build_string(recipe, options)
     "every #{options[:every]}#{options[:at]} do
-      command \"ebook-convert #{@recipes_path}/#{recipe}.recipe #{File.join(@current_path, recipe + ".mobi")}\"
-      command \"calibre-smtp --attachment #{recipe}.mobi --relay smtp.gmail.com --port 587 --username \\\"#{@config['email']}\\\" --password \\\"#{@config['password']}\\\" --encryption-method TLS #{@config['email']} #{@config['kindle_email']} \"\"\"
-      command \"rm #{File.join(@current_path, recipe + ".mobi")}\"
+      command \"ebook-convert #{@recipes_path}/#{recipe}.recipe #{File.join(@current_path, recipe + ".mobi")};calibre-smtp --attachment #{recipe}.mobi --relay smtp.gmail.com --port 587 --username \\\"#{@config['email']}\\\" --password \\\"#{@config['password']}\\\" --encryption-method TLS #{@config['email']} #{@config['kindle_email']} \"\";rm #{File.join(@current_path, recipe + ".mobi")}\"
     end\n"
   end
 
