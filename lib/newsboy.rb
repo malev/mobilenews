@@ -20,12 +20,7 @@ class Newsboy
 
     if @options[:deliver]
       @recipes.each do |recipe|
-        system "ebook-convert #{@recipes_path}/#{recipe}.recipe #{File.join(@current_path, recipe + ".mobi")}"
-        system "calibre-smtp --attachment #{recipe}.mobi --relay smtp.gmail.com --port 587 --username \"#{@config['email']}\" --password \"#{@config['password']}\" --encryption-method TLS #{@config['email']} #{@config['kindle_email']} \"\""
-        system "rm #{File.join(@current_path, recipe + ".mobi")}"
-        # %x[ebook-convert #{@recipes_path}/#{recipe}.recipe #{File.join(@current_path, recipe + ".mobi")}]
-        # %x[calibre-smtp --attachment #{recipe}.mobi --relay smtp.gmail.com --port 587 --username \\\"#{@config['email']}\\\" --password \\\"#{@config['password']}\\\" --encryption-method TLS #{@config['email']} #{@config['kindle_email']} \"\"]
-        # %x[rm #{File.join(@current_path, recipe + ".mobi")}]
+        system "thor newsboy:deliver #{recipe}"
         puts "sent!"
         exit(0)
       end
@@ -43,7 +38,7 @@ class Newsboy
 
   def build_string(recipe, options)
     "every #{options[:every]}#{options[:at]} do
-      command \"ebook-convert #{@recipes_path}/#{recipe}.recipe #{File.join(@current_path, recipe + ".mobi")};calibre-smtp --attachment #{recipe}.mobi --relay smtp.gmail.com --port 587 --username \\\"#{@config['email']}\\\" --password \\\"#{@config['password']}\\\" --encryption-method TLS #{@config['email']} #{@config['kindle_email']} \"\";rm #{File.join(@current_path, recipe + ".mobi")}\"
+      command \"cd #{@current_path} && thor newsboy:deliver #{recipe}\"
     end\n"
   end
 

@@ -3,6 +3,6 @@
 require_relative "lib/newsboy.rb"
 
 Newsboy.new do
-  deliver "pagina_12_print_ed", :every => "1 day", :at => "4.30 am"
+  deliver "pagina12", :every => "1 day", :at => "4.30 am"
   deliver "ieco", :every => "sunday", :at => "4.40 am"
 end.work
