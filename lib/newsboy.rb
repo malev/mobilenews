@@ -32,7 +32,7 @@ class Newsboy
   def deliver(recipe, options = {})
     options[:every] = get_every(options[:every])
     options[:at] = get_at(options[:at])
-    options[:to] = options[:to] ? options[:to] : 'default'
+    options[:to] = options.fetch(:to, 'default')
     @recipes << recipe
     @output << build_string(recipe, options)
   end
