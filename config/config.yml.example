@@ -1,7 +1,9 @@
 username: your_gmail_username
 password: your_gmail_password
 email: your_gmail_address
-kindle_email: your_kindle_mail@free.kindle.com
 recipes: [your_recipe_one, your_recipe_two]
 ril_username: username
 ril_password: password
+users:
+  default: default_kindle_email
+  malev: malev_kindle_email

@@ -3,8 +3,8 @@ require 'open3'
 
 class Newsboy < Thor
   desc "test", "just testing a bit"
-  def deliver(recipe)
-    load_config
+  def deliver(recipe, to='default')
+    load_config(to)
     mobi_file = generate_mobi(recipe)
     deliver_mobi(mobi_file)
     remove_mobi(mobi_file)
@@ -26,30 +26,29 @@ class Newsboy < Thor
 
   desc "Deliver mobi file", ""
   def deliver_mobi(mobi_file)
-    load_config
     puts "calibre-smtp --attachment #{mobi_file} --relay smtp.gmail.com --port 587 \\
             --username \"#{@config['email']}\" --password \"#{@config['password']}\" \\
-            --encryption-method TLS #{@config['email']} #{@config['kindle_email']} \"\" \\
+            --encryption-method TLS #{@config['email']} #{@reciever} \"\" \\
             >> #{@log_file} 2>&1"
     system("calibre-smtp --attachment #{mobi_file} --relay smtp.gmail.com --port 587 \\
             --username \"#{@config['email']}\" --password \"#{@config['password']}\" \\
-            --encryption-method TLS #{@config['email']} #{@config['kindle_email']} \"\" \\
+            --encryption-method TLS #{@config['email']} #{@reciever} \"\" \\
             >> #{@log_file} 2>&1")
   end
 
   desc "Remove mobi file", ""
   def remove_mobi(mobi_file)
-    load_config
     puts "rm #{mobi_file} >> #{@log_file} 2>&1"
     system("rm #{mobi_file} >> #{@log_file} 2>&1")
   end
 
   no_tasks do
-    def load_config
+    def load_config(to)
       @current_path = Dir.pwd
       @log_file = File.expand_path("log/cron_log.log", @current_path)
       @recipes_path = @current_path + "/recipes"
       @config = YAML.load_file(@current_path + "/config/config.yml")
+      @reciever = @config['users'][to]
     end
   end
 end
