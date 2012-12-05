@@ -8,14 +8,20 @@ lwn.net
 
 from calibre.web.feeds.news import BasicNewsRecipe
 import re
+import sys
 
 class WeeklyLWN(BasicNewsRecipe):
     title = 'LWN.net Weekly Edition'
     description = 'Weekly summary of what has happened in the free software world.'
     __author__ = 'Davide Cavalca'
     language = 'en'
+    site_url = u'http://lwn.net'
 
-    cover_url = 'http://lwn.net/images/lcorner.png'
+    extra_css = 'pre,code,samp,kbd,tt { font-size: 80% }\nblockquote {margin-left:0 }\n* { color: black }\n'
+    no_stylesheets = True
+    remove_javascript = True
+
+    cover_url = site_url + '/images/lcorner.png'
     #masthead_url = 'http://lwn.net/images/lcorner.png'
     publication_type = 'magazine'
 
@@ -25,10 +31,13 @@ class WeeklyLWN(BasicNewsRecipe):
 
     preprocess_regexps = [
         # Remove the <hr> and "Log in to post comments"
-        (re.compile(r'<hr.*?comments[)]', re.DOTALL), lambda m: ''),
+        (re.compile(r'<hr [^>]+>\s*\n\s*.*?comments[)]'), lambda m: ''),
     ]
 
-    conversion_options = { 'linearize_tables' : True }
+    conversion_options = {
+        'linearize_tables' : True,
+        'no_inline_navbars': True,
+    }
 
     oldest_article = 7.0
     needs_subscription = 'optional'
@@ -43,66 +52,91 @@ class WeeklyLWN(BasicNewsRecipe):
             br.submit()
         return br
 
+    def print_version(self, url):
+
+        # Strip off anchor
+        url = url.split('#')[0]
+
+        # Prepend site_url
+        if url[0:len(self.site_url)] != self.site_url:
+            url = self.site_url + url
+
+        # Append printable URL parameter
+        print_param = '?format=printable'
+        if url[-len(print_param):] != print_param:
+            url += print_param
+
+        return url
+
     def parse_index(self):
         if self.username is not None and self.password is not None:
-            index_url = 'http://lwn.net/current/bigpage?format=printable'
+            index_url = self.print_version('/current/bigpage')
         else:
-            index_url = 'http://lwn.net/free/bigpage?format=printable'
+            index_url = self.print_version('/free/bigpage')
         soup = self.index_to_soup(index_url)
-        body = soup.body
+        curr = soup.body
 
         articles = {}
         ans = []
-        url_re = re.compile('^/Articles/')
+
+        section = soup.title.string
+        subsection = None
 
         while True:
-            tag_title = body.findNext(name='p', attrs={'class':'SummaryHL'})
-            if tag_title == None:
+            curr = curr.findNext(attrs = {'class': ['SummaryHL', 'Cat1HL', 'Cat2HL'] })
+
+            if curr == None:
                 break
 
-            tag_section = tag_title.findPrevious(name='p', attrs={'class':'Cat1HL'})
-            if tag_section == None:
-                section = 'Front Page'
-            else:
-                section = tag_section.string
+            text = curr.contents[0].string
 
-            tag_section2 = tag_title.findPrevious(name='p', attrs={'class':'Cat2HL'})
-            if tag_section2 != None:
-                if tag_section2.findPrevious(name='p', attrs={'class':'Cat1HL'}) == tag_section:
-                    section = "%s: %s" %(section, tag_section2.string)
+            if 'Cat2HL' in curr.attrMap['class']:
+                subsection = text
 
-            if section not in articles.keys():
-                articles[section] = []
-            if section not in ans:
-                ans.append(section)
+            elif 'Cat1HL' in curr.attrMap['class']:
+                section = text
+                subsection = None
 
-            body = tag_title
-            while True:
-                tag_url = body.findNext(name='a', attrs={'href':url_re})
-                if tag_url == None:
-                    break
-                body = tag_url
-                if tag_url.string == None:
-                    continue
-                elif tag_url.string == 'Full Story':
-                    break
-                elif tag_url.string.startswith('Comments ('):
-                    break
+            elif 'SummaryHL' in curr.attrMap['class']:
+                article_title = text
+
+                if subsection:
+                    section_title = "%s: %s" % (section, subsection)
                 else:
+                    section_title = section
+
+                # Most articles have anchors in their titles, *except* the security vulnerabilities
+                article_anchor = curr.findNext(name = 'a', attrs = { 'href': re.compile('^/Articles/') } )
+
+                if article_anchor:
+                    article_url = article_anchor.get('href')
+                    if not article_url:
+                        print >>sys.stderr, 'article_url is None for article_anchor "%s": "%s"' \
+                                % (str(article_anchor), article_title)
+                        continue
+
+                else:
+                    print >>sys.stderr, 'article_anchor is None for "%s"; skipping' % article_title
+                    article_url = None
                     continue
 
-            if tag_url == None:
-                break
+                if section_title not in articles:
+                    articles[section_title] = []
+                if section_title not in ans:
+                    ans.append(section_title)
 
-            article = dict(
-                title=tag_title.string,
-                url= 'http://lwn.net' + tag_url['href'].split('#')[0] + '?format=printable',
-                description='', content='', date='')
-            articles[section].append(article)
+                articles[section_title].append({
+                        'url': article_url,
+                        'title': article_title,
+                        'description': '', 'content': '', 'date': '',
+                    })
 
-        ans = [(key, articles[key]) for key in ans if articles.has_key(key)]
-        if not ans:
-            raise Exception('Could not find any articles.')
+            else:
+                print >>sys.stderr, "lwn_weekly.recipe: something bad happened; should not be able to reach this"
+
+        ans = [(section, articles[section]) for section in ans if section in articles]
+        #from pprint import pprint
+        #pprint(ans)
 
         return ans
 

@@ -56,8 +56,14 @@ class TelegraphUK(BasicNewsRecipe):
                         ,(u'Sport'          , u'http://www.telegraph.co.uk/sport/rss'                                            )
                         ,(u'Earth News'     , u'http://www.telegraph.co.uk/earth/earthnews/rss'                                  )
                         ,(u'Comment'        , u'http://www.telegraph.co.uk/comment/rss'                                          )
+                        ,(u'Travel'        , u'http://www.telegraph.co.uk/travel/rss'                                            )
                         ,(u'How about that?', u'http://www.telegraph.co.uk/news/newstopics/howaboutthat/rss'                     )
                          ]
+    def populate_article_metadata(self, article, soup, first):
+        if first and hasattr(self, 'add_toc_thumbnail'):
+            picdiv = soup.find('img')
+            if picdiv is not None:
+                self.add_toc_thumbnail(article,picdiv['src'])
 
     def get_article_url(self, article):
         url = article.get('link', None)

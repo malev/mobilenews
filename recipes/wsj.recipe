@@ -8,6 +8,12 @@ import copy
 
 # http://online.wsj.com/page/us_in_todays_paper.html
 
+def filter_classes(x):
+    if not x: return False
+    bad_classes = {'sTools', 'printSummary', 'mostPopular', 'relatedCollection'}
+    classes = frozenset(x.split())
+    return len(bad_classes.intersection(classes)) > 0
+
 class WallStreetJournal(BasicNewsRecipe):
 
     title = 'The Wall Street Journal'
@@ -35,9 +41,17 @@ class WallStreetJournal(BasicNewsRecipe):
 
     remove_tags_before = dict(name='h1')
     remove_tags = [
-                    dict(id=["articleTabs_tab_article", "articleTabs_tab_comments", "articleTabs_tab_interactive","articleTabs_tab_video","articleTabs_tab_map","articleTabs_tab_slideshow","articleTabs_tab_quotes","articleTabs_tab_document"]),
+                    dict(id=["articleTabs_tab_article",
+                        "articleTabs_tab_comments",
+                        'articleTabs_panel_comments', 'footer',
+                        "articleTabs_tab_interactive", "articleTabs_tab_video",
+                        "articleTabs_tab_map", "articleTabs_tab_slideshow",
+                        "articleTabs_tab_quotes", "articleTabs_tab_document",
+                        "printModeAd", "aFbLikeAuth", "videoModule",
+                        "mostRecommendations", "topDiscussions"]),
                     {'class':['footer_columns','network','insetCol3wide','interactive','video','slideshow','map','insettip','insetClose','more_in', "insetContent", 'articleTools_bottom', 'aTools', "tooltip", "adSummary", "nav-inline"]},
                     dict(rel='shortcut icon'),
+                    {'class':filter_classes},
                     ]
     remove_tags_after = [dict(id="article_story_body"), {'class':"article story"},]
 
@@ -51,10 +65,16 @@ class WallStreetJournal(BasicNewsRecipe):
             br['password'] = self.password
             res = br.submit()
             raw = res.read()
-            if 'Welcome,' not in raw and '>Logout<' not in raw:
+            if 'Welcome,' not in raw and '>Logout<' not in raw and '>Log Out<' not in raw:
                 raise ValueError('Failed to log in to wsj.com, check your '
                         'username and password')
         return br
+
+    def populate_article_metadata(self, article, soup, first):
+        if first and hasattr(self, 'add_toc_thumbnail'):
+            picdiv = soup.find('img')
+            if picdiv is not None:
+                self.add_toc_thumbnail(article,picdiv['src'])
 
     def postprocess_html(self, soup, first):
         for tag in soup.findAll(name=['table', 'tr', 'td']):
@@ -93,9 +113,11 @@ class WallStreetJournal(BasicNewsRecipe):
         if date is not None:
             self.timefmt = ' [%s]'%self.tag_to_string(date)
 
-        cov = soup.find('a', attrs={'class':'icon pdf'}, href=True)
+        cov = soup.find('div', attrs={'class':'itpSectionHeaderPdf'})
         if cov is not None:
-            self.cover_url = cov['href']
+            a = cov.find('a', href=True)
+            if a is not None:
+                self.cover_url = a['href']
 
         feeds = []
         div = soup.find('div', attrs={'class':'itpHeader'})
